@@ -17,8 +17,8 @@ A modern, dark-themed portfolio showcasing 10+ years of Android development expe
 
 ```bash
 # Clone repository
-git clone https://github.com/Dev-moe-kyawaung/portfolio.git
-cd portfolio
+git clone https://github.com/Dev-moe-kyawaung/moekyawaung-portfolio-2026.git
+cd oekyawaung-portfolio-2026
 
 # Install dependencies
 npm install
