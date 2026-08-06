@@ -1,0 +1,51 @@
+# GitHub Actions workflow: build the site and deploy the exported out/ folder to gh-pages
+# - Runs on push to main and manual dispatch
+# - Reads NEXT_PUBLIC_BASE_PATH from repository secrets if set (optional)
+# - Uses peaceiris/actions-gh-pages to publish to gh-pages branch
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 18
+  # Optional: set NEXT_PUBLIC_BASE_PATH in repo secrets (Actions > Secrets) if deploying under a subpath (e.g. /repo-name)
+  NEXT_PUBLIC_BASE_PATH: ${{ secrets.NEXT_PUBLIC_BASE_PATH }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and export
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ env.NEXT_PUBLIC_BASE_PATH }}
+        run: npm run export
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          commit_message: "chore: deploy site (GitHub Actions)"
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
